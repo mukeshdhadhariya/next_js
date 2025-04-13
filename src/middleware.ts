@@ -1,12 +1,34 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
- 
-// This function can be marked `async` if using `await` inside
-export function middleware(request: NextRequest) {
-  return NextResponse.redirect(new URL('/home', request.url))
+export { default } from 'next-auth/middleware'
+import { getToken } from 'next-auth/jwt'
+
+export async function middleware(request: NextRequest) {
+  const token = await getToken({ req: request })
+  const url = request.nextUrl
+
+  const isAuthPage =
+    url.pathname.startsWith('/sign-in') ||
+    url.pathname.startsWith('/sign-up') ||
+    url.pathname.startsWith('/verify') ||
+    url.pathname === '/'
+
+  const isProtectedRoute = url.pathname.startsWith('/dashboard')
+
+  // ✅ Redirect authenticated users away from auth pages
+  if (token && isAuthPage) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  // ✅ Redirect unauthenticated users away from protected routes
+  if (!token && isProtectedRoute) {
+    return NextResponse.redirect(new URL('/home', request.url))
+  }
+
+  return NextResponse.next()
 }
- 
-// See "Matching Paths" below to learn more
+
+
 export const config = {
   matcher: [
     '/sign-in',
@@ -14,5 +36,5 @@ export const config = {
     '/',
     '/dashboard/:path*',
     '/verify/:path*'
-]
+  ]
 }

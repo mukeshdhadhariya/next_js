@@ -13,7 +13,7 @@ export const authOptions:NextAuthOptions={
             id: "credentials",
             name: "credentials",
             credentials:{
-                email: { label: "email", type: "text " },
+                email: { label: "email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
 
