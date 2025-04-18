@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
 
   // ✅ Redirect unauthenticated users away from protected routes
   if (!token && isProtectedRoute) {
-    return NextResponse.redirect(new URL('/home', request.url))
+    return NextResponse.redirect(new URL('/sign-in', request.url))
   }
 
   return NextResponse.next()
