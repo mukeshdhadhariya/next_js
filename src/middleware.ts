@@ -15,12 +15,10 @@ export async function middleware(request: NextRequest) {
 
   const isProtectedRoute = url.pathname.startsWith('/dashboard')
 
-  // ✅ Redirect authenticated users away from auth pages
   if (token && isAuthPage) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  // ✅ Redirect unauthenticated users away from protected routes
   if (!token && isProtectedRoute) {
     return NextResponse.redirect(new URL('/sign-in', request.url))
   }
