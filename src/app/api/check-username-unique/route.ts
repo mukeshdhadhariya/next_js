@@ -13,21 +13,24 @@ export async function GET(request:Request) {
 
     try {
 
-        const {searchParams}=new URL(request.url)
+        const { searchParams } = new URL(request.url);
 
-        const qureyparam={
-            username:searchParams.get('username')
+        const queryParams = {
+        username: searchParams.get('username'),
         }
 
-        const result=UsernameQuerySchema.safeParse(qureyparam)
+        const result = UsernameQuerySchema.safeParse(queryParams);
 
         if(!result.success){
             const usernameErrors=result.error.format().username?._errors || []
 
             return Response.json({
                 success:false,
-                message:'invalid qurey parameter'
-            },{
+                message:
+                usernameErrors?.length > 0
+                ? usernameErrors.join(', ')
+                : 'Invalid query parameters',
+                },{
                 status:400
             })
         }
@@ -47,9 +50,9 @@ export async function GET(request:Request) {
 
         return Response.json({
             success:true,
-            message:'username is unique'
+            message:'Username is unique'
         },{
-            status:400
+            status:200
         })
         
     } catch (error) {
