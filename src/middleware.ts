@@ -15,13 +15,13 @@ export async function middleware(request: NextRequest) {
 
   const isProtectedRoute = url.pathname.startsWith('/dashboard')
 
-  if (token && isAuthPage) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
+  // if (token && isAuthPage) {
+  //   return NextResponse.redirect(new URL('/dashboard', request.url))
+  // }
 
-  if (!token && isProtectedRoute) {
-    return NextResponse.redirect(new URL('/sign-in', request.url))
-  }
+  // if (!token && isProtectedRoute) {
+  //   return NextResponse.redirect(new URL('/sign-in', request.url))
+  // }
 
   return NextResponse.next()
 }
