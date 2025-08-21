@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from './ui/button';
 import { User } from 'next-auth';
+import { redirect } from 'next/navigation';
 
 function Navbar() {
   const { data: session } = useSession();
@@ -25,7 +26,7 @@ function Navbar() {
               Welcome, <span className="font-semibold text-white">{user.username || user.email}</span>
             </span>
             <Button
-              onClick={() => signOut()}
+              onClick={() =>signOut({ callbackUrl: "/sign-in" })}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 transition rounded-lg px-4 py-2 font-medium text-white shadow-md"
             >
               Logout
