@@ -31,12 +31,9 @@ const parseStringMessages = (messageString: string): string[] => {
   return messageString.split(specialChar);
 };
 
-const initialMessageString =
-  "What's your favorite movie?||Do you have any pets?||What's your dream job?";
-
 export default function SendMessage() {
 
-  const [completion, setCompletion] = useState<string>("");
+  const [completion, setCompletion] = useState<string>("What's your favorite movie?||Do you have any pets?||What's your dream job?");
   const [isSuggestLoading, setIsSuggestLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const params = useParams<{ username: string }>();
@@ -175,8 +172,8 @@ const fetchSuggestedMessages = async () => {
                 parseStringMessages(completion).map((message, index) => (
                   <Button
                     key={index}
-                    variant="outline" 
-                    className="justify-start text-left rounded-lg border-gray-300 hover:bg-gray-100 transition text-sm sm:text-base"
+                    variant="outline"
+                    className="justify-start text-left rounded-lg border-gray-300 hover:bg-gray-100 transition text-sm sm:text-[13px] whitespace-normal break-words w-full"
                     onClick={() => handleMessageClick(message)}
                   >
                     {message}
