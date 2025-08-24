@@ -4,7 +4,10 @@ export { default } from 'next-auth/middleware'
 import { getToken } from 'next-auth/jwt'
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request })
+
+  const secret = process.env.NEXT_AUTH_SECRET
+
+  const token = await getToken({ req: request, secret})
   const url = request.nextUrl
 
   const isAuthPage =
@@ -15,12 +18,10 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = url.pathname.startsWith('/dashboard')
 
   if (token && isAuthPage) {
-     console.log("token1" ,token)
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   if (!token && isProtectedRoute) {
-    console.log("token2" ,token)
     return NextResponse.redirect(new URL('/sign-in', request.url))
   }
 

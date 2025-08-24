@@ -4,6 +4,14 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 
+interface ReturnUser {
+  _id: string;
+  username: string;
+  email: string;
+  isVerified: boolean;
+  isAcceptingMessages: boolean;
+}
+
 
 export const authOptions:NextAuthOptions={
     providers:[
@@ -40,7 +48,17 @@ export const authOptions:NextAuthOptions={
                     const isPasswordCorrect=await bcrypt.compare(credentials.password,user.password)
 
                     if(isPasswordCorrect){
-                        return user
+
+                        const return_user:ReturnUser={
+                            _id: String(user._id),
+                            username: user.username,
+                            email: user.email,
+                            isVerified: user.isVerified,
+                            isAcceptingMessages: user.isAcceptingMessages,
+                        }
+
+                        return return_user;
+                        
                     }else{
                         throw new Error('user incorrect password')
                     }
