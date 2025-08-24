@@ -10,18 +10,19 @@ export async function middleware(request: NextRequest) {
   const isAuthPage =
     url.pathname.startsWith('/sign-in') ||
     url.pathname.startsWith('/sign-up') ||
-    url.pathname.startsWith('/verify') ||
-    url.pathname === '/'
+    url.pathname.startsWith('/verify')
 
   const isProtectedRoute = url.pathname.startsWith('/dashboard')
 
-  // if (token && isAuthPage) {
-  //   return NextResponse.redirect(new URL('/dashboard', request.url))
-  // }
+  if (token && isAuthPage) {
+     console.log("token1" ,token)
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
 
-  // if (!token && isProtectedRoute) {
-  //   return NextResponse.redirect(new URL('/sign-in', request.url))
-  // }
+  if (!token && isProtectedRoute) {
+    console.log("token2" ,token)
+    return NextResponse.redirect(new URL('/sign-in', request.url))
+  }
 
   return NextResponse.next()
 }
