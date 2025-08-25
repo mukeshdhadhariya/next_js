@@ -11,19 +11,15 @@ import { useRouter } from 'next/navigation';
 import { signUpSchema } from '@/schemas/signUpSchema';
 import axios, { AxiosError } from 'axios'
 import { ApiResponce } from '@/types/ApiRespoce';
-import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button';
 
 export default function SignUpForm() {
-
   const [username, setUsername] = useState('');
   const [usernameMessage, setUsernameMessage] = useState('');
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const debounced = useDebounceCallback(setUsername, 500);
-  const router = useRouter()
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -32,12 +28,13 @@ export default function SignUpForm() {
       email: '',
       password: '',
     }
-  })
+  });
 
+  // check username uniqueness
   useEffect(() => {
     const checkUsernameUnique = async () => {
       if (username) {
-        setIsCheckingUsername(true)
+        setIsCheckingUsername(true);
         setUsernameMessage('');
         try {
           const response = await axios.get<ApiResponce>(
@@ -53,32 +50,29 @@ export default function SignUpForm() {
           setIsCheckingUsername(false);
         }
       }
-    }
-    checkUsernameUnique()
-  }, [username])
+    };
+    checkUsernameUnique();
+  }, [username]);
 
+  // handle submit
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      const response = await axios.post('/api/sign-up', data)
+      const response = await axios.post('/api/sign-up', data);
 
       toast.success(response.data.message);
-      router.replace(`/verify/${username}`)
-      setIsSubmitting(false);
+      router.replace(`/verify/${username}`);
     } catch (error) {
-      console.error('Error during sign-up:', error);
-
       const axiosError = error as AxiosError<ApiResponce>;
-
-      // Default error message
-      let errorMessage = axiosError.response?.data.message;
-      ('There was a problem with your sign-up. Please try again.');
+      let errorMessage =
+        axiosError.response?.data.message ??
+        'There was a problem with your sign-up. Please try again.';
 
       toast.error(errorMessage);
-
+    } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
@@ -94,95 +88,82 @@ export default function SignUpForm() {
         </div>
 
         {/* Form */}
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            {/* Username */}
-            <FormField
-              name="username"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      {...field}
-                      placeholder="Enter your username"
-                      onChange={(e) => {
-                        field.onChange(e);
-                        debounced(e.target.value);
-                      }}
-                    />
-                    {isCheckingUsername && (
-                      <Loader2 className="animate-spin h-5 w-5 text-gray-500" />
-                    )}
-                  </div>
-                  <div className="min-h-[18px]">
-                    {isCheckingUsername ? (
-                      <p className="text-gray-500 text-[13px]">Checking username...</p>
-                    ) : usernameMessage ? (
-                      <p
-                        className={`text-[13px] ${ usernameMessage === 'Username is unique' ? 'text-green-600' : 'text-red-600' }`}
-                      >
-                      {usernameMessage}
-                      </p>
-                    ) : null}
-                  </div>
-
-                  <FormMessage />
-                </FormItem>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          {/* Username */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Username</label>
+            <div className="flex items-center gap-2 mt-1">
+              <input
+                {...form.register("username")}
+                placeholder="Enter your username"
+                className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => {
+                  form.setValue("username", e.target.value);
+                  debounced(e.target.value);
+                }}
+              />
+              {isCheckingUsername && (
+                <Loader2 className="animate-spin h-5 w-5 text-gray-500" />
               )}
+            </div>
+            <div className="min-h-[18px] text-sm mt-1">
+              {isCheckingUsername ? (
+                <p className="text-gray-500">Checking username...</p>
+              ) : usernameMessage ? (
+                <p
+                  className={
+                    usernameMessage === 'Username is unique'
+                      ? 'text-green-600'
+                      : 'text-red-600'
+                  }
+                >
+                  {usernameMessage}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              {...form.register("email")}
+              placeholder="Enter your email"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <p className="text-gray-400 text-xs mt-1">
+              We’ll send you a verification code
+            </p>
+          </div>
 
-            {/* Email */}
-            <FormField
-              name="email"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <Input {...field} placeholder="Enter your email" />
-                  <p className="text-gray-400 text-xs mt-1">
-                    We’ll send you a verification code
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <input
+              type="password"
+              {...form.register("password")}
+              placeholder="Create a strong password"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
 
-            {/* Password */}
-            <FormField
-              name="password"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <Input
-                    type="password"
-                    {...field}
-                    placeholder="Create a strong password"
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Button */}
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 transition rounded-xl py-2 font-semibold text-white shadow-md"
-              aria-disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Please wait...
-                </>
-              ) : (
-                'Sign Up'
-              )}
-            </Button>
-          </form>
-        </Form>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full flex justify-center items-center gap-2 py-2 px-4 rounded-xl font-semibold text-white shadow-md transition 
+              ${isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90'}`}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Signing Up...
+              </>
+            ) : (
+              'Sign Up'
+            )}
+          </button>
+        </form>
 
         {/* Footer */}
         <div className="text-center mt-4">
@@ -198,7 +179,5 @@ export default function SignUpForm() {
         </div>
       </div>
     </div>
-
-  )
-
+  );
 }

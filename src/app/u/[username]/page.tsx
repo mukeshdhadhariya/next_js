@@ -73,7 +73,7 @@ export default function SendMessage() {
     }
   };
 
-const fetchSuggestedMessages = async () => {
+  const fetchSuggestedMessages = async () => {
     try {
       setIsSuggestLoading(true);
       setError(null);
@@ -89,12 +89,21 @@ const fetchSuggestedMessages = async () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black px-3 sm:px-4">
+    <div className="mt-[-10] flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black px-3 sm:px-4">
       <div className="w-full my-6 sm:my-10 p-4 sm:p-6 md:p-8 bg-white rounded-2xl shadow-lg max-w-6xl">
         {/* Title */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-6 sm:mb-8 text-center text-gray-900">
-          Public Profile Link
-        </h1>
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            href="/"
+            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-lg shadow-md hover:from-blue-600 hover:to-indigo-700 transition-all duration-200"
+          >
+            ⬅ Back
+          </Link>
+
+          <h1 className="flex-1 text-center text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900">
+            Public Profile Link
+          </h1>
+        </div>
 
         {/* 2-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
