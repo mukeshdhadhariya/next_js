@@ -106,90 +106,102 @@ function UserDashboard() {
   };
 
   return (
-<div className="flex justify-center items-center min-h-[86.2vh] md:min-h-[88.2vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
-  <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded-2xl shadow-lg w-full max-w-6xl">
-    {/* Header */}
-    <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">
-      User Dashboard
-    </h1>
+    <div className="flex justify-center items-center min-h-[86vh] bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
+      <div className="my-6 mx-4 md:mx-8 lg:mx-auto p-6 bg-white/10 backdrop-blur-xl rounded-2xl shadow-lg w-full max-w-6xl">
 
-    {/* Copy Unique Link */}
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold mb-3 text-gray-800">
-        Copy Your Unique Link
-      </h2>
-      <div className="flex items-center gap-2">
-        <input
-          type="text"
-          value={profileUrl}
-          disabled
-          className="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2 text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-        />
-        <Button
-          onClick={copyToClipboard}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 transition rounded-xl px-4 py-2 text-white font-medium shadow-md"
-        >
-          Copy
-        </Button>
+        {/* Header */}
+        <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-6">
+          User Dashboard
+        </h1>
+
+        {/* Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          {/* Left: User Details */}
+          <div className="space-y-6 md:col-span-1">
+            {/* Copy Unique Link */}
+            <div>
+              <h2 className="text-lg font-semibold mb-3 text-gray-200">
+                Copy Your Unique Link
+              </h2>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={profileUrl}
+                  disabled
+                  className="w-full rounded-xl border border-gray-600 bg-gray-900/60 px-4 py-2 text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                />
+                <Button
+                  onClick={copyToClipboard}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 transition rounded-xl px-4 py-2 text-white font-medium shadow-md"
+                >
+                  Copy
+                </Button>
+              </div>
+            </div>
+
+            {/* Switch */}
+            <div className="flex items-center">
+              <Switch
+                {...register("acceptMessages")}
+                checked={acceptMessages}
+                onCheckedChange={handleSwitchChange}
+                disabled={isSwitchLoading}
+              />
+              <span className="ml-3 text-gray-300 font-medium">
+                Accept Messages:{" "}
+                <span className={acceptMessages ? "text-green-400" : "text-red-400"}>
+                  {acceptMessages ? "On" : "Off"}
+                </span>
+              </span>
+            </div>
+
+            <Separator className="bg-gray-700" />
+
+            {/* Refresh Button */}
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                className="rounded-xl border-gray-600 text-gray-200 hover:bg-gray-800 flex items-center gap-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  fetchMessages(true);
+                }}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                ) : (
+                  <RefreshCcw className="h-4 w-4 text-gray-400" />
+                )}
+                Refresh
+              </Button>
+            </div>
+          </div>
+
+          {/* Right: Messages */}
+          <div className="md:col-span-2">
+            <h2 className="text-lg font-semibold mb-3 text-gray-200">Messages</h2>
+            <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-4 h-[60vh] overflow-y-auto">
+              {messages.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {messages.map((message, index) => (
+                    <MessageCard
+                      key={message._id as any}
+                      message={message}
+                      onMessageDelete={handleDeleteMessage}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-6">
+                  No messages to display.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    {/* Switch */}
-    <div className="mb-6 flex items-center">
-      <Switch
-        {...register("acceptMessages")}
-        checked={acceptMessages}
-        onCheckedChange={handleSwitchChange}
-        disabled={isSwitchLoading}
-      />
-      <span className="ml-3 text-gray-700 font-medium">
-        Accept Messages:{" "}
-        <span className={acceptMessages ? "text-green-600" : "text-red-600"}>
-          {acceptMessages ? "On" : "Off"}
-        </span>
-      </span>
-    </div>
-
-    <Separator />
-
-    {/* Refresh Button */}
-    <div className="mt-6 flex justify-end">
-      <Button
-        variant="outline"
-        className="rounded-xl border-gray-300 hover:bg-gray-100 flex items-center gap-2"
-        onClick={(e) => {
-          e.preventDefault();
-          fetchMessages(true);
-        }}
-      >
-        {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin text-gray-600" />
-        ) : (
-          <RefreshCcw className="h-4 w-4 text-gray-600" />
-        )}
-        Refresh
-      </Button>
-    </div>
-
-    {/* Messages */}
-    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-      {messages.length > 0 ? (
-        messages.map((message, index) => (
-          <MessageCard
-            key={message._id as any}
-            message={message}
-            onMessageDelete={handleDeleteMessage}
-          />
-        ))
-      ) : (
-        <p className="text-gray-500 text-center col-span-2 py-6">
-          No messages to display.
-        </p>
-      )}
-    </div>
-  </div>
-</div>
-
   )
 }
 
